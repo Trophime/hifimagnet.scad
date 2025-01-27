@@ -38,7 +38,8 @@ n_tierods = 36;
 d_tierods = 10;
 r_tierods = 349.7;
 
-// coolingslits
+// coolingslits (add optional fillets??)
+fillet = false;
 d_slits = 1.1;
 l_slits = 5.9;
 n_slits = 144;
@@ -131,23 +132,28 @@ module tierods(n, r, r1, h){
     }
 }
 
-module coolingslit(r, d, l, h){
+module coolingslit(r, d, l, h, fillet=false){
   hc = h * 1.2;
   translate([r,0,0]){
-    union(){
-      translate([0,l/2,0]){cylinder(h=hc, r=d/2, center=true);};
+    // add fillets option to speed up??
+    if (fillet) {
+      union(){
+        translate([0,l/2,0]){cylinder(h=hc, r=d/2, center=true);};
+        cube([d, l, hc], center=true);
+        translate([0,-l/2,0]){cylinder(h=hc, r=d/2, center=true);};
+      }
+    } else {
       cube([d, l, hc], center=true);
-      translate([0,-l/2,0]){cylinder(h=hc, r=d/2, center=true);};
-    }
+    };
   }
 }
 
-module coolingslits(n, r, d, l, h){
+module coolingslits(n, r, d, l, h, fillet=false){
     theta = 360/ n;
-    echo("coolingslits:", theta=theta, r=r, d=d, l=l, h=h);
+    echo("coolingslits:", theta=theta, r=r, d=d, l=l, h=h, fillet=fillet);
     for(i = [0:n-1]){
         rotate(a=i*theta, v=[0,0,1]){
-	  coolingslit(r, d, l, h);
+	  coolingslit(r, d, l, h, fillet);
         };
     }
 }
@@ -169,7 +175,7 @@ module magnet(){
     if (coolingslits_display || all_display) {
         // add cooling slits
         for (i = [0:len(r_slits)-1]){
-	  rotate(a=shift_slits[i], v=[0,0,1]){coolingslits(n_slits, r_slits[i], d_slits, l_slits, dz);};
+	  rotate(a=shift_slits[i], v=[0,0,1]){coolingslits(n_slits, r_slits[i], d_slits, l_slits, dz, fillet);};
         }
     };
   };
@@ -196,7 +202,7 @@ if (all_display){
 	  if (coolingslits_display) {
 	    // add cooling slits
 	    for (i = [0:len(r_slits)-1]){
-	      rotate(a=shift_slits[i], v=[0,0,1]){coolingslits(n_slits, r_slits[i], d_slits, l_slits, dz);};
+	      rotate(a=shift_slits[i], v=[0,0,1]){coolingslits(n_slits, r_slits[i], d_slits, l_slits, dz, fillet);};
 	    }
 	  };
         };
@@ -207,7 +213,7 @@ if (all_display){
         difference() {
           base(rint, rext, dz);
           for (i = [0:len(r_slits)-1]){
-	    rotate(a=shift_slits[i], v=[0,0,1]){coolingslits(n_slits, r_slits[i], d_slits, l_slits, dz);};
+	    rotate(a=shift_slits[i], v=[0,0,1]){coolingslits(n_slits, r_slits[i], d_slits, l_slits, dz, fillet);};
           }
         };
       } else {
@@ -221,7 +227,7 @@ if (all_display){
     
     if (coolingslits_display) {
         for (i = [0:len(r_slits)-1]){
-	       rotate(a=shift_slits[i], v=[0,0,1]){coolingslits(n_slits, r_slits[i], d_slits, l_slits, dz);};
+	       rotate(a=shift_slits[i], v=[0,0,1]){coolingslits(n_slits, r_slits[i], d_slits, l_slits, dz, fillet);};
         }
     };
 };
