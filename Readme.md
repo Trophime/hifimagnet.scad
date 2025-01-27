@@ -31,3 +31,7 @@ Use cgal (either 5.x or 6.x version)
 * `OpenSCAD`
 * `dotSCAD`
 * `cgal`
+
+# TIPS
+
+rotate(a=180, v=[0,1,0]) { ... }
