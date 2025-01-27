@@ -1,7 +1,7 @@
 use <dotSCAD/src/polyline_join.scad>
 
 radius = 10;
-thickness = 2;
+thickness = 4;
 
 points = [
     for(a = [0:360]) 
