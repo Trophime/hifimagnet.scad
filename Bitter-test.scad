@@ -1,4 +1,4 @@
-use <dotSCAD/src/helix_extrude.scad>
+use <../../dotSCAD-3.3/src/helix_extrude.scad>
 
 $fnt = 100;
 $fa = 1;

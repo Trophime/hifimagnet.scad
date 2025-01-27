@@ -1,4 +1,4 @@
-use <dotSCAD/src/polyline_join.scad>
+use <../../dotSCAD-3.3/src/polyline_join.scad>
 
 radius = 10;
 thickness = 4;

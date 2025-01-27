@@ -1,4 +1,4 @@
-use <dotSCAD/src/helix_extrude.scad>
+use <../../dotSCAD/src/helix_extrude.scad>
 
 // see data in M8_Be.yaml
 

@@ -1,4 +1,4 @@
-use <./dotSCAD-3.3/src/helix_extrude.scad>
+use <../../dotSCAD-3.3/src/helix_extrude.scad>
 
 // see data in M8_Be.yaml
 
@@ -16,12 +16,12 @@ rint = 200;
 rext = 340;
 z_inf = -302.99;
 z_sup = 302.99;
-electric_height = 2 * 298.99;
+electric_height = 2 * 298.995;
 dz = abs(z_sup-z_inf);
 
 // helical cut
 turns = [3, 12, 3];
-pitch = [50.7133333333333, 24.475, 50.7133333333333];
+pitch = [152.145/turns[0], 293.7, 152.145/turns[2]];
 cut_width = 0.2; // instead of 0.2
 color = ["red", "blue", "red"];
 echo(rint=rint, rext=rext, dz=dz, turns=turns, electric_height=electric_height, pitch=pitch);
