@@ -9,8 +9,9 @@ use <../../dotSCAD-3.3/src/helix_extrude.scad>
 // $fs : minimum circumferential length of each fragment.
 // $fn : fixed number of fragments in 360 degrees. Values of 3 or more override $fa and $fs
 
-$fa=1.25;
-$fn = 400;
+$fa = 1.25;
+//$fs = 0.01; // min allowed value it seems
+//$fn = 400;
 
 // better to centralize data params here
 odd = false;
@@ -27,11 +28,12 @@ cut_width = 0.2; // instead of 0.2
 color = ["red"]; 
 echo(rint=rint, rext=rext, dz=dz, turns=turns, electric_height=electric_height, pitch=pitch);
 
-all_display = true;
+all_display = false;
 base_display = false; // cylinder with cooling slits
 cut_display = false; // cut with cooling slits
 tierods_display = false; // only tierods
 coolingslits_display = false; // only coolingslits
+fillet = true;
 
 // tierods
 n_tierods = 36;
@@ -39,7 +41,6 @@ d_tierods = 10;
 r_tierods = 349.7;
 
 // coolingslits (add optional fillets??)
-fillet = false;
 d_slits = 1.1;
 l_slits = 5.9;
 n_slits = 144;
@@ -118,13 +119,13 @@ module tierod(r, r1, h){
     translate([r,0,0])
     color( "red" )
     {
-        cylinder(h=h*1.2, r=r1, center=true);
+        cylinder(h=h*1.2, r=r1, center=true, $fa=1.25);
     };
 }
 
 module tierods(n, r, r1, h){
     theta = 360/ n;
-    echo("tierods:", thetha=theta);
+    echo("tierods:", theta=theta, n=n, r=r, r1=r1, h=h);
     for(i = [0:n-1]){
         rotate(a=i*theta, v=[0,0,1]){
 	       tierod(r, r1, h);
@@ -138,9 +139,9 @@ module coolingslit(r, d, l, h, fillet=false){
     // add fillets option to speed up??
     if (fillet) {
       union(){
-        translate([0,l/2,0]){cylinder(h=hc, r=d/2, center=true);};
+        translate([0,l/2,0]){cylinder(h=hc, r=d/2, center=true, $fn = 0, $fa = 1.25, $fs = 0.2);};
         cube([d, l, hc], center=true);
-        translate([0,-l/2,0]){cylinder(h=hc, r=d/2, center=true);};
+        translate([0,-l/2,0]){cylinder(h=hc, r=d/2, center=true, $fn = 0, $fa = 1.25, $fs = 0.2);};
       }
     } else {
       cube([d, l, hc], center=true);
@@ -181,12 +182,12 @@ module magnet(){
   };
 };
 
-echo(cut_display=cut_display);
 if (all_display){
+  echo("display_all");
     magnet();
 } else {
     if (cut_display){
-        echo("intersection")
+      echo("cut_display");
         difference(){
           intersection(){
 	    base(rint, rext, dz);
@@ -195,11 +196,13 @@ if (all_display){
 	    };
 	  };
 
-	  if (tierods_display || all_display) {
+	  if (tierods_display) {
+	    echo("cut_display with tierods");
 	    tierods(n_tierods, r_tierods, d_tierods/2, dz);
           };
 
 	  if (coolingslits_display) {
+	    echo("cut_display with cooling_slits");
 	    // add cooling slits
 	    for (i = [0:len(r_slits)-1]){
 	      rotate(a=shift_slits[i], v=[0,0,1]){coolingslits(n_slits, r_slits[i], d_slits, l_slits, dz, fillet);};
@@ -209,7 +212,9 @@ if (all_display){
     };
     
     if (base_display) {
+      echo("base_display");
       if (coolingslits_display) {
+	echo("base_display with coolingslits")
         difference() {
           base(rint, rext, dz);
           for (i = [0:len(r_slits)-1]){
@@ -217,18 +222,22 @@ if (all_display){
           }
         };
       } else {
+	echo("base_display only")
         base(rint, rext, dz);
       };
     };
     
     if (tierods_display) {
+      echo("tierods_display");
       color("red") tierods(n_tierods, r_tierods, d_tierods/2, dz);
     };
     
     if (coolingslits_display) {
-        for (i = [0:len(r_slits)-1]){
-	       rotate(a=shift_slits[i], v=[0,0,1]){coolingslits(n_slits, r_slits[i], d_slits, l_slits, dz, fillet);};
-        }
+      echo("tierods_display");
+      $fn = 100;
+      for (i = [0:len(r_slits)-1]){
+	rotate(a=shift_slits[i], v=[0,0,1]){coolingslits(n_slits, r_slits[i], d_slits, l_slits, dz, fillet);};
+      }
     };
 };
 
